@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TECHNEXUS 2026</title>
+<style>
+html,body{margin:0;height:100%;overflow-x:hidden;background:#050816;color:#fff;font-family:Arial,sans-serif}
+#bg{position:fixed;inset:0;z-index:0}
+.overlay{position:relative;z-index:2}
+.hero{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+h1{font-size:clamp(3rem,8vw,7rem);margin:0;background:linear-gradient(90deg,#7df,#fff,#7df);-webkit-background-clip:text;color:transparent}
+.tag{opacity:.8}
+.section{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:4rem}
+.card{max-width:900px;background:rgba(255,255,255,.06);backdrop-filter:blur(10px);padding:2rem;border-radius:24px;border:1px solid rgba(125,220,255,.25)}
+.btn{display:inline-block;padding:14px 28px;background:#7df;color:#000;border-radius:999px;text-decoration:none;font-weight:bold}
+.scroll{position:absolute;bottom:30px;animation:b 1.5s infinite}
+@keyframes b{50%{transform:translateY(10px)}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div class="overlay">
+<section class="hero">
+<h1>TECHNEXUS 2026</h1>
+<p class="tag">Enter the Future Engine</p>
+<div class="scroll">▼ Scroll</div>
+</section>
+
+<section class="section">
+<div class="card">
+<h2>Quantum Tunnel</h2>
+<p>Fly through a futuristic technology ecosystem with immersive visuals, floating AI cores, robotics showcases, gaming arenas, hackathons and innovation challenges.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="card">
+<h2>AI Core</h2>
+<p>The glowing sphere in the center reacts to mouse movement and scroll depth, creating a dynamic futuristic experience inspired by premium interactive websites.</p>
+</div>
+</section>
+
+<section class="section">
+<div class="card">
+<h2>Join TECHNEXUS</h2>
+<p>Experience innovation, compete, build, and explore the future.</p>
+<a class="btn" href="#">Register Now</a>
+</div>
+</section>
+</div>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script>
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,1000);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('bg'),antialias:true,alpha:true});
+renderer.setSize(innerWidth,innerHeight);
+camera.position.z=12;
+
+const starsGeo=new THREE.BufferGeometry();
+const count=5000;
+const pos=new Float32Array(count*3);
+for(let i=0;i<count*3;i++) pos[i]=(Math.random()-0.5)*300;
+starsGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+const stars=new THREE.Points(starsGeo,new THREE.PointsMaterial({size:.2,color:0x88ddff}));
+scene.add(stars);
+
+const sphere=new THREE.Mesh(
+ new THREE.IcosahedronGeometry(2,2),
+ new THREE.MeshStandardMaterial({color:0x55ccff,wireframe:true})
+);
+scene.add(sphere);
+
+const light=new THREE.PointLight(0x88ddff,5);
+light.position.set(5,5,5);
+scene.add(light);
+
+scene.add(new THREE.AmbientLight(0xffffff,.4));
+
+let mx=0,my=0;
+addEventListener('mousemove',e=>{
+ mx=(e.clientX/innerWidth-.5)*2;
+ my=(e.clientY/innerHeight-.5)*2;
+});
+
+function animate(){
+ requestAnimationFrame(animate);
+ sphere.rotation.x+=0.003;
+ sphere.rotation.y+=0.006;
+ sphere.position.x += (mx*2-sphere.position.x)*0.03;
+ sphere.position.y += (-my*2-sphere.position.y)*0.03;
+ stars.rotation.y += 0.0005;
+ renderer.render(scene,camera);
+}
+animate();
+
+addEventListener('scroll',()=>{
+ const s=scrollY*0.002;
+ camera.position.z=12+s;
+ sphere.scale.setScalar(1+scrollY/4000);
+});
+
+addEventListener('resize',()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+});
+</script>
+</body>
+</html>
